@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAP Academy Clone — Full Stack Developer Bootcamp (Educational Project)</title>
+<meta name="description" content="Educational, non-affiliated clone of the TAP Academy homepage. Built for front-end practice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1120;
+    --ink-2:#080D19;
+    --surface:#121A2E;
+    --surface-2:#182544;
+    --stroke:rgba(255,255,255,0.09);
+    --stroke-strong:rgba(255,255,255,0.16);
+    --amber:#FFB020;
+    --amber-soft:rgba(255,176,32,0.14);
+    --mint:#22D3B0;
+    --mint-soft:rgba(34,211,176,0.14);
+    --text:#F5F7FA;
+    --text-muted:#9AA7BD;
+    --text-dim:#5B6B87;
+    --radius:14px;
+    --radius-lg:22px;
+    --maxw:1200px;
+    --shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    margin:0;
+    line-height:1.12;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  a{color:inherit; text-decoration:none;}
+  ul{margin:0; padding:0; list-style:none;}
+  img{max-width:100%; display:block;}
+  button{font:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  input,textarea{font:inherit;}
+  :focus-visible{outline:2px solid var(--mint); outline-offset:3px; border-radius:4px;}
+
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--mint);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{content:"//"; color:var(--text-dim);}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:13px 24px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:15px;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--amber);
+    color:#1a1200;
+    box-shadow:0 10px 24px -8px rgba(255,176,32,0.55);
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 16px 30px -8px rgba(255,176,32,0.65);}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--stroke-strong);
+    color:var(--text);
+  }
+  .btn-ghost:hover{border-color:var(--mint); color:var(--mint); transform:translateY(-2px);}
+  .btn-sm{padding:9px 16px; font-size:13.5px;}
+  .btn-block{width:100%;}
+
+  /* ---------- NAVBAR ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(11,17,32,0.75);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid transparent;
+    transition:border-color .25s ease, background .25s ease;
+  }
+  header.scrolled{border-bottom-color:var(--stroke); background:rgba(8,13,25,0.92);}
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 0;
+  }
+  .nav-logo img{height:34px; width:auto;}
+  .nav-links{
+    display:flex; align-items:center; gap:32px;
+  }
+  .nav-links a{
+    font-size:14.5px; font-weight:500; color:var(--text-muted);
+    transition:color .18s ease; position:relative;
+  }
+  .nav-links a:hover{color:var(--text);}
+  .nav-actions{display:flex; align-items:center; gap:12px;}
+  .nav-toggle{
+    display:none;
+    width:40px; height:40px; align-items:center; justify-content:center;
+    border-radius:8px; border:1px solid var(--stroke-strong);
+  }
+  .nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+    content:""; display:block; width:18px; height:2px; background:var(--text);
+    position:relative; transition:transform .2s ease, opacity .2s ease;
+  }
+  .nav-toggle span::before{position:absolute; top:-6px;}
+  .nav-toggle span::after{position:absolute; top:6px;}
+  .nav-toggle.open span{background:transparent;}
+  .nav-toggle.open span::before{transform:translateY(6px) rotate(45deg);}
+  .nav-toggle.open span::after{transform:translateY(-6px) rotate(-45deg);}
+
+  .user-chip{
+    display:flex; align-items:center; gap:8px;
+    padding:6px 14px 6px 6px;
+    border:1px solid var(--stroke-strong); border-radius:999px;
+    font-size:13.5px; font-weight:600;
+  }
+  .user-chip .avatar{
+    width:26px; height:26px; border-radius:50%;
+    background:var(--mint); color:#04231c;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .user-chip .logout{color:var(--text-dim); font-weight:500; margin-left:4px;}
+  .user-chip .logout:hover{color:var(--amber);}
+
+  @media (max-width:900px){
+    .nav-links{
+      position:fixed; inset:64px 16px auto 16px;
+      background:var(--surface);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      flex-direction:column; align-items:stretch; gap:0;
+      padding:8px;
+      box-shadow:var(--shadow);
+      transform:translateY(-12px); opacity:0; pointer-events:none;
+      transition:transform .22s ease, opacity .22s ease;
+    }
+    .nav-links.open{transform:translateY(0); opacity:1; pointer-events:auto;}
+    .nav-links a{padding:13px 12px; border-radius:10px;}
+    .nav-links a:hover{background:var(--surface-2);}
+    .nav-toggle{display:flex;}
+    .nav-actions .btn-ghost.desktop-only{display:none;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    padding:72px 0 96px;
+  }
+  .hero::before, .hero::after{
+    content:""; position:absolute; border-radius:50%; filter:blur(90px); z-index:0;
+  }
+  .hero::before{width:420px; height:420px; background:var(--amber-soft); top:-120px; right:-80px;}
+  .hero::after{width:380px; height:380px; background:var(--mint-soft); bottom:-140px; left:-100px;}
+  .hero-grid{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(34px, 4.6vw, 56px);
+    margin-top:18px;
+  }
+  .hero h1 .hl{color:var(--amber);}
+  .hero-sub{
+    margin-top:20px; font-size:17px; color:var(--text-muted); max-width:52ch;
+  }
+  .hero-cta{display:flex; flex-wrap:wrap; gap:14px; margin-top:32px;}
+  .hero-trust{
+    margin-top:36px; display:flex; align-items:center; gap:14px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text-dim);
+  }
+  .avatar-stack{display:flex;}
+  .avatar-stack span{
+    width:30px; height:30px; border-radius:50%; border:2px solid var(--ink);
+    margin-left:-9px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#0B1120;
+  }
+  .avatar-stack span:first-child{margin-left:0;}
+
+  /* terminal mock */
+  .terminal{
+    background:var(--surface);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:12px 16px; background:var(--surface-2); border-bottom:1px solid var(--stroke);
+  }
+  .terminal-bar i{width:11px; height:11px; border-radius:50%; display:block;}
+  .terminal-bar i:nth-child(1){background:#FF6159;}
+  .terminal-bar i:nth-child(2){background:#FFBD2E;}
+  .terminal-bar i:nth-child(3){background:#28C840;}
+  .terminal-bar span{
+    margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-dim);
+  }
+  .terminal-body{
+    padding:22px 20px 26px; font-family:'JetBrains Mono',monospace; font-size:13.5px; color:#C9D4E5;
+    min-height:230px;
+  }
+  .terminal-body .ln{color:var(--text-dim); display:inline-block; width:18px;}
+  .terminal-body .kw{color:#C792EA;}
+  .terminal-body .fn{color:var(--mint);}
+  .terminal-body .str{color:var(--amber);}
+  .terminal-body .com{color:var(--text-dim);}
+  #typeTarget{white-space:pre-wrap;}
+  .cursor{display:inline-block; width:8px; height:15px; background:var(--mint); vertical-align:middle; animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .terminal-result{
+    margin-top:16px; padding:12px 14px; border-radius:10px;
+    background:var(--mint-soft); border:1px solid rgba(34,211,176,0.35);
+    color:var(--mint); font-size:12.5px; display:flex; align-items:center; gap:8px;
+    opacity:0; transform:translateY(6px); transition:opacity .4s ease, transform .4s ease;
+  }
+  .terminal-result.show{opacity:1; transform:translateY(0);}
+
+  /* ---------- SECTION SHELLS ---------- */
+  section{padding:92px 0;}
+  .section-head{max-width:640px; margin:0 auto 48px; text-align:center;}
+  .section-head.left{margin:0 0 48px; text-align:left;}
+  .section-head h2{font-size:clamp(28px,3.4vw,40px); margin-top:14px;}
+  .section-head p{color:var(--text-muted); margin-top:14px; font-size:16px;}
+
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---------- STATS ---------- */
+  .stats{
+    background:var(--surface);
+    border-top:1px solid var(--stroke);
+    border-bottom:1px solid var(--stroke);
+    padding:56px 0;
+  }
+  .stats-head{text-align:center; color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:32px;}
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  .stat-card{text-align:center; padding:18px 8px; border-right:1px solid var(--stroke);}
+  .stat-card:last-child{border-right:none;}
+  .stat-num{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(28px,3.4vw,40px); color:var(--amber);
+  }
+  .stat-num .unit{color:var(--mint);}
+  .stat-label{margin-top:6px; font-size:13.5px; color:var(--text-muted);}
+  @media (max-width:760px){
+    .stats-grid{grid-template-columns:repeat(2,1fr); row-gap:28px;}
+    .stat-card{border-right:none;}
+  }
+
+  /* ---------- COURSES ---------- */
+  .course-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .course-card{
+    background:var(--surface);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius-lg);
+    padding:28px 26px 26px;
+    position:relative; overflow:hidden;
+    transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+  .course-card:hover{
+    transform:translateY(-6px);
+    border-color:var(--stroke-strong);
+    box-shadow:var(--shadow);
+  }
+  .course-card::before{
+    content:""; position:absolute; inset:0; opacity:0; transition:opacity .25s ease;
+    background:radial-gradient(400px circle at 80% -10%, var(--amber-soft), transparent 60%);
+  }
+  .course-card:hover::before{opacity:1;}
+  .course-tag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em;
+    color:var(--mint); background:var(--mint-soft); padding:5px 10px; border-radius:999px;
+    text-transform:uppercase;
+  }
+  .course-icon{
+    width:46px; height:46px; border-radius:12px; margin-top:18px;
+    background:var(--surface-2); border:1px solid var(--stroke);
+    display:flex; align-items:center; justify-content:center; color:var(--amber);
+  }
+  .course-card h3{font-size:20px; margin-top:16px;}
+  .course-meta{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); margin-top:6px;}
+  .course-skills{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+  .course-skills span{
+    font-size:12px; padding:5px 10px; border-radius:7px;
+    background:var(--surface-2); color:var(--text-muted); border:1px solid var(--stroke);
+  }
+  .course-card .btn{margin-top:22px; width:100%;}
+
+  @media (max-width:940px){ .course-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:640px){ .course-grid{grid-template-columns:1fr;} }
+
+  /* ---------- WHY US ---------- */
+  .why{background:var(--surface); border-top:1px solid var(--stroke); border-bottom:1px solid var(--stroke);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--stroke); border:1px solid var(--stroke); border-radius:var(--radius-lg); overflow:hidden;}
+  .why-item{background:var(--ink); padding:32px 28px; transition:background .2s ease;}
+  .why-item:hover{background:var(--surface-2);}
+  .why-icon{
+    width:42px; height:42px; border-radius:10px; background:var(--amber-soft); color:var(--amber);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+  }
+  .why-item h3{font-size:17px;}
+  .why-item p{margin-top:8px; font-size:14px; color:var(--text-muted);}
+  @media (max-width:940px){ .why-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:640px){ .why-grid{grid-template-columns:1fr;} }
+
+  /* ---------- TESTIMONIALS ---------- */
+  .testi-wrap{position:relative; max-width:760px; margin:0 auto;}
+  .testi-track{overflow:hidden; border-radius:var(--radius-lg);}
+  .testi-slides{display:flex; transition:transform .5s cubic-bezier(.65,0,.35,1);}
+  .testi-slide{min-width:100%; padding:2px;}
+  .testi-card{
+    background:var(--surface); border:1px solid var(--stroke); border-radius:var(--radius-lg);
+    padding:36px 34px; text-align:center;
+  }
+  .stars{color:var(--amber); font-size:15px; letter-spacing:2px;}
+  .testi-quote{margin-top:16px; font-size:17px; color:var(--text); line-height:1.65;}
+  .testi-person{display:flex; align-items:center; justify-content:center; gap:12px; margin-top:22px;}
+  .testi-person .avatar{
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; color:#0B1120;
+  }
+  .testi-person .who{text-align:left;}
+  .testi-person .who strong{display:block; font-size:14.5px;}
+  .testi-person .who span{font-size:12.5px; color:var(--text-muted);}
+  .testi-nav{display:flex; align-items:center; justify-content:center; gap:20px; margin-top:26px;}
+  .testi-arrow{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--stroke-strong);
+    display:flex; align-items:center; justify-content:center; transition:border-color .2s ease, color .2s ease;
+  }
+  .testi-arrow:hover{border-color:var(--mint); color:var(--mint);}
+  .testi-dots{display:flex; gap:8px;}
+  .testi-dots button{width:8px; height:8px; border-radius:50%; background:var(--stroke-strong); transition:background .2s ease, width .2s ease;}
+  .testi-dots button.active{background:var(--mint); width:22px; border-radius:5px;}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{
+    background:linear-gradient(120deg, var(--surface), var(--surface-2));
+    border:1px solid var(--stroke);
+    border-radius:var(--radius-lg);
+    padding:52px 40px;
+    display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;
+  }
+  .cta-band h2{font-size:clamp(24px,3vw,32px); max-width:520px;}
+  .cta-band-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .cta-contact{display:flex; gap:22px; margin-top:18px; flex-wrap:wrap;}
+  .cta-contact a{display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;}
+  .cta-contact a:hover{color:var(--mint);}
+
+  /* ---------- CONTACT FORM ---------- */
+  .contact-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:start;}
+  .contact-info-item{display:flex; gap:14px; padding:16px 0; border-bottom:1px solid var(--stroke);}
+  .contact-info-item .ic{
+    width:38px; height:38px; border-radius:10px; background:var(--mint-soft); color:var(--mint);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .contact-info-item strong{display:block; font-size:14.5px;}
+  .contact-info-item span, .contact-info-item a{font-size:13.5px; color:var(--text-muted);}
+  .contact-info-item a:hover{color:var(--amber);}
+  .form-card{
+    background:var(--surface); border:1px solid var(--stroke); border-radius:var(--radius-lg); padding:32px;
+  }
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-size:13px; color:var(--text-muted); margin-bottom:7px;}
+  .field input, .field textarea{
+    width:100%; background:var(--ink); border:1px solid var(--stroke-strong); border-radius:9px;
+    padding:12px 14px; color:var(--text); transition:border-color .2s ease;
+  }
+  .field input:focus, .field textarea:focus{border-color:var(--mint); outline:none;}
+  .field textarea{resize:vertical; min-height:100px;}
+  .form-note{font-size:12px; color:var(--text-dim); margin-top:10px; text-align:center;}
+  @media (max-width:860px){ .contact-grid{grid-template-columns:1fr;} }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink-2); border-top:1px solid var(--stroke); padding:64px 0 0;}
+  .footer-top{display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:36px;}
+  .footer-brand p{color:var(--text-muted); font-size:14px; margin-top:14px; max-width:32ch;}
+  .footer-brand img{height:32px; margin-bottom:4px;}
+  .social-row{display:flex; gap:10px; margin-top:20px;}
+  .social-row a{
+    width:36px; height:36px; border-radius:9px; border:1px solid var(--stroke-strong);
+    display:flex; align-items:center; justify-content:center; transition:border-color .2s ease, color .2s ease;
+  }
+  .social-row a:hover{border-color:var(--mint); color:var(--mint);}
+  .footer-col h4{font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); font-weight:600;}
+  .footer-col ul{margin-top:16px; display:flex; flex-direction:column; gap:12px;}
+  .footer-col a{font-size:14px; color:var(--text-muted); transition:color .18s ease;}
+  .footer-col a:hover{color:var(--mint);}
+  .footer-bottom{
+    margin-top:56px; padding:22px 0; border-top:1px solid var(--stroke);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  }
+  .footer-bottom p{font-size:12.5px; color:var(--text-dim);}
+  .disclaimer{
+    background:var(--surface); border:1px dashed var(--stroke-strong); border-radius:12px;
+    padding:16px 18px; font-size:12.5px; color:var(--text-muted); margin-top:40px; line-height:1.6;
+  }
+  .disclaimer strong{color:var(--amber);}
+  @media (max-width:860px){
+    .footer-top{grid-template-columns:1fr 1fr; row-gap:32px;}
+  }
+  @media (max-width:560px){
+    .footer-top{grid-template-columns:1fr;}
+  }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(5,8,16,0.72); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    z-index:200; opacity:0; pointer-events:none; transition:opacity .22s ease;
+  }
+  .modal-overlay.open{opacity:1; pointer-events:auto;}
+  .modal{
+    background:var(--surface); border:1px solid var(--stroke); border-radius:var(--radius-lg);
+    width:100%; max-width:400px; padding:30px 28px; box-shadow:var(--shadow);
+    transform:translateY(16px) scale(.98); transition:transform .22s ease;
+  }
+  .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .modal-head h3{font-size:20px;}
+  .modal-close{width:30px; height:30px; display:flex; align-items:center; justify-content:center; color:var(--text-dim); border-radius:8px;}
+  .modal-close:hover{color:var(--text); background:var(--surface-2);}
+  .modal-sub{font-size:13px; color:var(--text-dim); margin-top:2px; margin-bottom:20px;}
+  .modal-tabs{display:flex; gap:6px; background:var(--ink); padding:4px; border-radius:10px; margin-bottom:22px;}
+  .modal-tabs button{flex:1; padding:9px; border-radius:7px; font-size:13.5px; font-weight:600; color:var(--text-dim);}
+  .modal-tabs button.active{background:var(--surface-2); color:var(--text);}
+  .modal-demo-note{
+    font-size:11.5px; color:var(--text-dim); background:var(--ink); border:1px solid var(--stroke);
+    padding:9px 11px; border-radius:8px; margin-top:16px; text-align:center;
+  }
+  .spinner{
+    width:16px; height:16px; border-radius:50%; border:2px solid rgba(0,0,0,0.25); border-top-color:#1a1200;
+    animation:spin .7s linear infinite; display:none;
+  }
+  .btn.loading .spinner{display:inline-block;}
+  .btn.loading .btn-label{display:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ---------- TOAST ---------- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--surface); border:1px solid var(--stroke-strong); color:var(--text);
+    padding:14px 20px; border-radius:12px; box-shadow:var(--shadow);
+    font-size:14px; display:flex; align-items:center; gap:10px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    z-index:300; max-width:90vw;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  #toast .dot{width:8px; height:8px; border-radius:50%; background:var(--mint); flex-shrink:0;}
+
+  /* ---------- Responsive base ---------- */
+  @media (max-width:940px){
+    .hero-grid{grid-template-columns:1fr; gap:44px;}
+    .hero-cta{justify-content:flex-start;}
+    section{padding:68px 0;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:0 18px;}
+    section{padding:56px 0;}
+    .cta-band{padding:36px 24px; flex-direction:column; align-items:flex-start;}
+    .form-card{padding:24px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= ICON SPRITE ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.7 3.6 4.9 6.3 6.3l2.1-2.1c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1.1.5 1.1 1.1V20c0 .6-.5 1.1-1.1 1.1C10.5 21.1 3 13.6 3 4.9 3 4.3 3.5 3.8 4.1 3.8h3.4c.6 0 1.1.5 1.1 1.1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.2 1.1L6.6 10.8z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-mail" viewBox="0 0 24 24"><path d="M3.5 6.5h17v11h-17v-11z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 105 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.7" fill="none"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.7" fill="none"/></symbol>
+  <symbol id="ic-arrow-l" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-arrow-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-java" viewBox="0 0 24 24"><path d="M8 15c4 2.5 8 .5 8 .5M9 18c3 1.5 6 .3 6 .3M12 3c-3 2.5 3 4-.5 7C8 13 12 15 12 15" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-py" viewBox="0 0 24 24"><path d="M12 3c-3.3 0-4.5 1.1-4.5 3v2.2h4.8v.9H5.7C4 9.1 3 10.3 3 12.9c0 2.6 1 3.7 2.7 3.7h1.2V15c0-1.8 1.2-3.1 4.5-3.1h3.2c1.6 0 2.4-.9 2.4-2.4V6c0-1.9-1.2-3-4.5-3H12z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/><circle cx="9.3" cy="5.3" r=".6" fill="currentColor"/><circle cx="14.7" cy="18.7" r=".6" fill="currentColor"/></symbol>
+  <symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" stroke="currentColor" stroke-width="1.7" fill="none"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.7" fill="none"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5M16 8.2a3 3 0 010 5.9M21 20c0-2.6-1.8-4.6-4-5.3" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="ic-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="12" cy="12" r="4.8" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="ic-layers" viewBox="0 0 24 24"><path d="M12 3l9 4.7L12 12.4 3 7.7 12 3z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M3 12l9 4.7 9-4.7M3 16.3L12 21l9-4.7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-briefcase" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18" stroke="currentColor" stroke-width="1.6" fill="none"/></symbol>
+  <symbol id="ic-linkedin" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M7.5 10v6.5M7.5 7.6v.1M11.5 16.5V13c0-1.4.9-2.4 2.2-2.4 1.3 0 2 .9 2 2.4v3.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="ic-yt" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.5 9.5l5 2.5-5 2.5v-5z" fill="currentColor"/></symbol>
+  <symbol id="ic-insta" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="17" cy="7" r="1" fill="currentColor"/></symbol>
+</svg>
+
+<!-- ================= HEADER ================= -->
+<header id="siteHeader">
+  <div class="wrap nav">
+    <a href="#top" class="nav-logo"><img src="assets/tap-academy-logo-white.svg" alt="TAP Academy logo"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#courses">Courses</a>
+      <a href="#why">Why TAP</a>
+      <a href="#testimonials">Success Stories</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="tel:+919999999999" class="btn btn-ghost btn-sm desktop-only">📞 +91 99999 99999</a>
+      <div id="authArea">
+        <button class="btn btn-primary btn-sm" id="loginBtn">Log In</button>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <span class="eyebrow">AR-enabled Full Stack Bootcamp</span>
+      <h1>Ship your first <span class="hl">job offer</span>,<br>not just another certificate.</h1>
+      <p class="hero-sub">Java &amp; Python Full Stack training built around real hiring bars — live mentor classes, daily code reviews, mock interviews, and a placement desk that stays with you until you're placed.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" id="heroDemoBtn">Book a Free Demo Class</button>
+        <a href="tel:+919999999999" class="btn btn-ghost">Talk to Admissions →</a>
+      </div>
+      <div class="hero-trust">
+        <div class="avatar-stack" aria-hidden="true">
+          <span style="background:#FFB020">RK</span>
+          <span style="background:#22D3B0">SA</span>
+          <span style="background:#8B9CFF">MP</span>
+          <span style="background:#FF9C6B">TN</span>
+        </div>
+        <span>trusted by learners from 500+ colleges across India</span>
+      </div>
+    </div>
+
+    <div class="terminal reveal in" style="transition-delay:.1s">
+      <div class="terminal-bar">
+        <i></i><i></i><i></i>
+        <span>career.js — tap-academy</span>
+      </div>
+      <div class="terminal-body">
+        <div id="typeTarget"></div>
+        <div class="terminal-result" id="terminalResult">
+          <svg width="16" height="16"><use href="#ic-check"/></svg>
+          offer.status === "accepted" ✅ Full Stack Developer @ Product Co.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats">
+  <div class="wrap">
+    <p class="stats-head">Trusted by students across India</p>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" data-count="500" data-suffix="+">0</div><div class="stat-label">Partner colleges nationwide</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="75000" data-suffix="+">0</div><div class="stat-label">Students trained</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="1200" data-suffix="+">0</div><div class="stat-label">Hiring partners</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="4.8" data-decimal="1" data-suffix="/5">0</div><div class="stat-label">Average learner rating</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COURSES ================= -->
+<section id="courses">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Programs</span>
+      <h2>Pick a track. Build. Get placed.</h2>
+      <p>Every program runs on a flip-class model — pre-recorded concept videos with visual builds, followed by live doubt-solving with mentors who've shipped production code.</p>
+    </div>
+
+    <div class="course-grid">
+      <article class="course-card reveal">
+        <span class="course-tag">Most enrolled</span>
+        <div class="course-icon"><svg width="24" height="24"><use href="#ic-java"/></svg></div>
+        <h3>Java Full Stack Developer</h3>
+        <p class="course-meta">6 months · Online + Offline · Placement guarantee</p>
+        <div class="course-skills">
+          <span>Core Java</span><span>Spring Boot</span><span>React</span><span>SQL</span>
+        </div>
+        <button class="btn btn-ghost btn-block">Explore Curriculum</button>
+      </article>
+
+      <article class="course-card reveal" style="transition-delay:.08s">
+        <span class="course-tag">High demand</span>
+        <div class="course-icon"><svg width="24" height="24"><use href="#ic-py"/></svg></div>
+        <h3>Python Full Stack Developer</h3>
+        <p class="course-meta">6 months · Online + Offline · Placement guarantee</p>
+        <div class="course-skills">
+          <span>Python</span><span>Django</span><span>React</span><span>PostgreSQL</span>
+        </div>
+        <button class="btn btn-ghost btn-block">Explore Curriculum</button>
+      </article>
+
+      <article class="course-card reveal" style="transition-delay:.16s">
+        <span class="course-tag">New</span>
+        <div class="course-icon"><svg width="24" height="24"><use href="#ic-chart"/></svg></div>
+        <h3>Data Science &amp; AI</h3>
+        <p class="course-meta">5 months · Online + Offline · Placement support</p>
+        <div class="course-skills">
+          <span>Python</span><span>ML</span><span>Pandas</span><span>Power BI</span>
+        </div>
+        <button class="btn btn-ghost btn-block">Explore Curriculum</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY TAP ACADEMY ================= -->
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Why TAP Academy</span>
+      <h2>Built for people who learn by seeing it work</h2>
+      <p>A teaching method and a placement engine, running as one system.</p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-item reveal"><div class="why-icon"><svg width="20" height="20"><use href="#ic-eye"/></svg></div><h3>Visual, AR-assisted learning</h3><p>Concepts rendered as live, animated builds — so memory recall and hands-on recall move together.</p></div>
+      <div class="why-item reveal" style="transition-delay:.06s"><div class="why-icon"><svg width="20" height="20"><use href="#ic-users"/></svg></div><h3>Live mentor classes</h3><p>Daily doubt-solving with engineers who review your code, not just your attendance.</p></div>
+      <div class="why-item reveal" style="transition-delay:.12s"><div class="why-icon"><svg width="20" height="20"><use href="#ic-layers"/></svg></div><h3>Flip-class model</h3><p>Watch the concept on your time, then apply it live — theory never eats into build time.</p></div>
+      <div class="why-item reveal" style="transition-delay:.18s"><div class="why-icon"><svg width="20" height="20"><use href="#ic-target"/></svg></div><h3>Daily coding practice</h3><p>Structured problem sets across difficulty tiers, with feedback the same day.</p></div>
+      <div class="why-item reveal" style="transition-delay:.24s"><div class="why-icon"><svg width="20" height="20"><use href="#ic-briefcase"/></svg></div><h3>1:1 placement support</h3><p>Resume builds, mock panels, and warm intros — a dedicated desk works your case till you're placed.</p></div>
+      <div class="why-item reveal" style="transition-delay:.3s"><div class="why-icon"><svg width="20" height="20"><use href="#ic-check"/></svg></div><h3>Real hiring partners</h3><p>Interview pipelines built with companies that are actually hiring for full stack roles, right now.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section id="testimonials">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Success stories</span>
+      <h2>What learners say after they've been placed</h2>
+    </div>
+
+    <div class="testi-wrap reveal">
+      <div class="testi-track">
+        <div class="testi-slides" id="testiSlides">
+
+          <div class="testi-slide">
+            <div class="testi-card">
+              <div class="stars">★★★★★</div>
+              <p class="testi-quote">"Coming from a non-CS background, I couldn't make sense of textbooks. Seeing every data structure animated before I wrote a line of code is what finally made it click."</p>
+              <div class="testi-person">
+                <span class="avatar" style="background:#FFB020">BK</span>
+                <div class="who"><strong>Bhoomika K.</strong><span>Java Full Stack · Placed as SDE-1</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testi-slide">
+            <div class="testi-card">
+              <div class="stars">★★★★★</div>
+              <p class="testi-quote">"The mock interviews were tougher than my real ones. By the time I sat for actual placement drives, nothing about the pressure felt new."</p>
+              <div class="testi-person">
+                <span class="avatar" style="background:#22D3B0">RS</span>
+                <div class="who"><strong>Rohit S.</strong><span>Python Full Stack · Placed as Backend Dev</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testi-slide">
+            <div class="testi-card">
+              <div class="stars">★★★★★</div>
+              <p class="testi-quote">"24-hour doubt support meant I never sat stuck on a bug overnight. Small thing, but it changed how fast I actually improved."</p>
+              <div class="testi-person">
+                <span class="avatar" style="background:#8B9CFF">AP</span>
+                <div class="who"><strong>Asish P.</strong><span>Data Science &amp; AI · Placed as Analyst</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testi-slide">
+            <div class="testi-card">
+              <div class="stars">★★★★★</div>
+              <p class="testi-quote">"The placement desk kept sending drives my way even after two rejections. That persistence is the whole reason I have an offer today."</p>
+              <div class="testi-person">
+                <span class="avatar" style="background:#FF9C6B">MN</span>
+                <div class="who"><strong>Megha N.</strong><span>Java Full Stack · Placed as Frontend Dev</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="testi-nav">
+        <button class="testi-arrow" id="testiPrev" aria-label="Previous testimonial"><svg width="18" height="18"><use href="#ic-arrow-l"/></svg></button>
+        <div class="testi-dots" id="testiDots"></div>
+        <button class="testi-arrow" id="testiNext" aria-label="Next testimonial"><svg width="18" height="18"><use href="#ic-arrow-r"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA BAND ================= -->
+<section>
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <div>
+        <h2>Your placement season starts the day you enroll.</h2>
+        <div class="cta-contact">
+          <a href="tel:+919999999999"><svg width="15" height="15"><use href="#ic-phone"/></svg> +91 99999 99999</a>
+          <a href="mailto:admissions@tapacademy-clone.example"><svg width="15" height="15"><use href="#ic-mail"/></svg> admissions@tapacademy-clone.example</a>
+        </div>
+      </div>
+      <div class="cta-band-actions">
+        <button class="btn btn-primary" id="ctaDemoBtn">Book Free Demo Class</button>
+        <a href="#contact" class="btn btn-ghost">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div class="reveal">
+      <span class="eyebrow">Get in touch</span>
+      <h2 style="margin-top:14px; font-size:clamp(24px,3vw,32px);">Questions about a course? We'll call you back.</h2>
+      <p style="margin-top:14px; color:var(--text-muted);">Prefer to reach out directly? Every channel below opens immediately — no forms required.</p>
+
+      <div style="margin-top:24px;">
+        <div class="contact-info-item">
+          <div class="ic"><svg width="18" height="18"><use href="#ic-phone"/></svg></div>
+          <div><strong>Call admissions</strong><a href="tel:+919999999999">+91 99999 99999</a></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ic"><svg width="18" height="18"><use href="#ic-mail"/></svg></div>
+          <div><strong>Email us</strong><a href="mailto:admissions@tapacademy-clone.example">admissions@tapacademy-clone.example</a></div>
+        </div>
+        <div class="contact-info-item">
+          <div class="ic"><svg width="18" height="18"><use href="#ic-pin"/></svg></div>
+          <div><strong>Visit a center</strong><span>Bengaluru · Hyderabad · Pune (demo addresses)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card reveal" style="transition-delay:.1s">
+      <h3 style="font-size:19px; margin-bottom:6px;">Send a message</h3>
+      <p style="font-size:13px; color:var(--text-dim); margin-bottom:22px;">This opens your email app with the message pre-filled, addressed to the demo inbox above.</p>
+      <form id="contactForm">
+        <div class="field">
+          <label for="cName">Full name</label>
+          <input type="text" id="cName" required placeholder="Your name">
+        </div>
+        <div class="field">
+          <label for="cEmail">Email</label>
+          <input type="email" id="cEmail" required placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label for="cMsg">Message</label>
+          <textarea id="cMsg" required placeholder="Which course are you interested in?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="btn-label">Open Email to Send</span><span class="spinner"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="assets/tap-academy-logo-white.svg" alt="TAP Academy logo">
+        <p>An educational front-end clone recreating TAP Academy's homepage layout for design and coding practice.</p>
+        <div class="social-row">
+          <a href="https://www.linkedin.com/company/thetapacademy" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16"><use href="#ic-linkedin"/></svg></a>
+          <a href="https://www.youtube.com/tapacademy" target="_blank" rel="noopener" aria-label="YouTube"><svg width="16" height="16"><use href="#ic-yt"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="16" height="16"><use href="#ic-insta"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Courses</h4>
+        <ul>
+          <li><a href="#courses">Java Full Stack</a></li>
+          <li><a href="#courses">Python Full Stack</a></li>
+          <li><a href="#courses">Data Science &amp; AI</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#why">Why TAP Academy</a></li>
+          <li><a href="#testimonials">Success Stories</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+919999999999">+91 99999 99999</a></li>
+          <li><a href="mailto:admissions@tapacademy-clone.example">admissions@tapacademy-clone.example</a></li>
+          <li><a href="https://thetapacademy.com" target="_blank" rel="noopener">Original site ↗</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="disclaimer wrap" style="margin-left:0; margin-right:0;">
+      <strong>Educational clone — not affiliated with TAP Academy.</strong> This page is a front-end practice project built to study layout, responsive design, and interaction patterns. Company name, "TAP Academy," and all trademarks belong to their respective owner. All stats, testimonials, and contact details on this page are illustrative placeholders, not real data. Visit the original at <a href="https://thetapacademy.com" target="_blank" rel="noopener" style="color:var(--mint);">thetapacademy.com</a>.
+    </div>
+
+    <div class="wrap footer-bottom" style="padding-left:0; padding-right:0;">
+      <p>© 2026 TAP Academy Clone. Built for learning purposes.</p>
+      <p>Designed &amp; coded with an original palette + type system.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= LOGIN MODAL ================= -->
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Log in</h3>
+      <button class="modal-close" id="modalClose" aria-label="Close"><svg width="16" height="16"><use href="#ic-x"/></svg></button>
+    </div>
+    <p class="modal-sub">Access your learning dashboard.</p>
+    <div class="modal-tabs">
+      <button class="active" id="tabLogin">Log In</button>
+      <button id="tabSignup">Sign Up</button>
+    </div>
+    <form id="loginForm">
+      <div class="field" id="nameField" style="display:none;">
+        <label for="lName">Full name</label>
+        <input type="text" id="lName" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label for="lEmail">Email</label>
+        <input type="email" id="lEmail" required placeholder="you@email.com">
+      </div>
+      <div class="field">
+        <label for="lPass">Password</label>
+        <input type="password" id="lPass" required placeholder="••••••••" minlength="4">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">
+        <span class="btn-label">Log In</span><span class="spinner"></span>
+      </button>
+    </form>
+    <p class="modal-demo-note">Demo mode — this is a front-end-only clone with no real backend. Any email &amp; password (4+ characters) will "log you in" for the purpose of this demo.</p>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div id="toast"><span class="dot"></span><span id="toastMsg"></span></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- HEADER SCROLL ---------- */
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 8);
+  }, {passive:true});
+
+  /* ---------- MOBILE NAV ---------- */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', open);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  /* ---------- REVEAL ON SCROLL ---------- */
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(el => io.observe(el));
+
+  /* ---------- STAT COUNTERS ---------- */
+  const statEls = document.querySelectorAll('.stat-num');
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      const el = entry.target;
+      statIO.unobserve(el);
+      const target = parseFloat(el.dataset.count);
+      const decimals = parseInt(el.dataset.decimal || '0', 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1400;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        el.textContent = (decimals ? val.toFixed(decimals) : Math.round(val).toLocaleString('en-IN')) + '';
+        el.innerHTML = (decimals ? val.toFixed(decimals) : Math.round(val).toLocaleString('en-IN')) + '<span class="unit">' + suffix + '</span>';
+        if(p < 1) requestAnimationFrame(tick); else {
+          el.innerHTML = (decimals ? target.toFixed(decimals) : Math.round(target).toLocaleString('en-IN')) + '<span class="unit">' + suffix + '</span>';
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }, {threshold:0.4});
+  statEls.forEach(el => statIO.observe(el));
+
+  /* ---------- HERO TERMINAL TYPEWRITER ---------- */
+  const typeTarget = document.getElementById('typeTarget');
+  const terminalResult = document.getElementById('terminalResult');
+  const codeHTML = [
+    '<span class="ln">1</span><span class="kw">const</span> learner = <span class="fn">enroll</span>(<span class="str">"Full Stack"</span>);\n',
+    '<span class="ln">2</span><span class="kw">await</span> learner.<span class="fn">practice</span>(<span class="str">"daily"</span>);\n',
+    '<span class="ln">3</span><span class="kw">await</span> learner.<span class="fn">mockInterview</span>();\n',
+    '<span class="ln">4</span><span class="com">// placement desk takes over</span>\n',
+    '<span class="ln">5</span><span class="kw">const</span> offer = <span class="kw">await</span> learner.<span class="fn">getPlaced</span>();'
+  ].join('');
+
+  function typeLoop(){
+    typeTarget.innerHTML = '';
+    terminalResult.classList.remove('show');
+    let i = 0;
+    const plain = codeHTML;
+    // type by revealing characters of the raw HTML string in chunks that respect tags
+    const stripped = plain;
+    const container = document.createElement('div');
+    typeTarget.appendChild(container);
+    let idx = 0;
+    function step(){
+      idx += 3;
+      container.innerHTML = stripped.slice(0, idx) + '<span class="cursor"></span>';
+      if(idx < stripped.length){
+        requestAnimationFrame(() => setTimeout(step, 12));
+      } else {
+        container.innerHTML = stripped;
+        setTimeout(() => terminalResult.classList.add('show'), 300);
+        setTimeout(typeLoop, 3600);
+      }
+    }
+    step();
+  }
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    typeLoop();
+  } else {
+    typeTarget.innerHTML = codeHTML;
+    terminalResult.classList.add('show');
+  }
+
+  /* ---------- TESTIMONIAL SLIDER ---------- */
+  const slidesWrap = document.getElementById('testiSlides');
+  const slides = Array.from(slidesWrap.children);
+  const dotsWrap = document.getElementById('testiDots');
+  let current = 0;
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    if(i === 0) dot.classList.add('active');
+    dot.setAttribute('aria-label', 'Go to testimonial ' + (i+1));
+    dot.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = Array.from(dotsWrap.children);
+  function goTo(i){
+    current = (i + slides.length) % slides.length;
+    slidesWrap.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, di) => d.classList.toggle('active', di === current));
+  }
+  document.getElementById('testiPrev').addEventListener('click', () => { goTo(current - 1); resetAutoplay(); });
+  document.getElementById('testiNext').addEventListener('click', () => { goTo(current + 1); resetAutoplay(); });
+
+  let autoplay;
+  function startAutoplay(){
+    autoplay = setInterval(() => goTo(current + 1), 5500);
+  }
+  function resetAutoplay(){
+    clearInterval(autoplay);
+    startAutoplay();
+  }
+  startAutoplay();
+  const testiWrap = document.querySelector('.testi-wrap');
+  testiWrap.addEventListener('mouseenter', () => clearInterval(autoplay));
+  testiWrap.addEventListener('mouseleave', startAutoplay);
+
+  // touch swipe
+  let touchStartX = 0;
+  slidesWrap.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX, {passive:true});
+  slidesWrap.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 40){ goTo(current + (dx < 0 ? 1 : -1)); resetAutoplay(); }
+  }, {passive:true});
+
+  /* ---------- TOAST ---------- */
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
+  let toastTimer;
+  function showToast(msg){
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  /* ---------- LOGIN MODAL ---------- */
+  const overlay = document.getElementById('loginOverlay');
+  const loginBtn = document.getElementById('loginBtn');
+  const modalClose = document.getElementById('modalClose');
+  const tabLogin = document.getElementById('tabLogin');
+  const tabSignup = document.getElementById('tabSignup');
+  const nameField = document.getElementById('nameField');
+  const modalTitle = document.getElementById('modalTitle');
+  const loginForm = document.getElementById('loginForm');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const authArea = document.getElementById('authArea');
+  let mode = 'login';
+  let session = null;
+
+  function openModal(){ overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(){ overlay.classList.remove('open'); document.body.style.overflow=''; }
+
+  loginBtn.addEventListener('click', openModal);
+  document.getElementById('heroDemoBtn').addEventListener('click', () => showToast('Demo booking request received — our team will reach out shortly 🎉'));
+  document.getElementById('ctaDemoBtn').addEventListener('click', () => showToast('Demo booking request received — our team will reach out shortly 🎉'));
+  modalClose.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+  tabLogin.addEventListener('click', () => setMode('login'));
+  tabSignup.addEventListener('click', () => setMode('signup'));
+  function setMode(m){
+    mode = m;
+    tabLogin.classList.toggle('active', m === 'login');
+    tabSignup.classList.toggle('active', m === 'signup');
+    nameField.style.display = m === 'signup' ? 'block' : 'none';
+    document.getElementById('lName').required = m === 'signup';
+    modalTitle.textContent = m === 'signup' ? 'Create your account' : 'Log in';
+    loginSubmit.querySelector('.btn-label').textContent = m === 'signup' ? 'Sign Up' : 'Log In';
+  }
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = document.getElementById('lEmail').value.trim();
+    const name = document.getElementById('lName').value.trim();
+    loginSubmit.classList.add('loading');
+    loginSubmit.disabled = true;
+    setTimeout(() => {
+      loginSubmit.classList.remove('loading');
+      loginSubmit.disabled = false;
+      session = { name: name || email.split('@')[0], email };
+      renderAuth();
+      closeModal();
+      loginForm.reset();
+      showToast('Welcome' + (mode === 'signup' ? '' : ' back') + ', ' + capitalize(session.name) + ' 👋');
+      setMode('login');
+    }, 900);
+  });
+
+  function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function renderAuth(){
+    if(!session){
+      authArea.innerHTML = '<button class="btn btn-primary btn-sm" id="loginBtn">Log In</button>';
+      document.getElementById('loginBtn').addEventListener('click', openModal);
+      return;
+    }
+    const initials = session.name.slice(0,2).toUpperCase();
+    authArea.innerHTML = `
+      <div class="user-chip">
+        <span class="avatar">${initials}</span>
+        <span>${capitalize(session.name)}</span>
+        <button class="logout" id="logoutBtn">Log out</button>
+      </div>`;
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      session = null;
+      renderAuth();
+      showToast('You have been logged out.');
+    });
+  }
+
+  /* ---------- CONTACT FORM -> MAILTO ---------- */
+  const contactForm = document.getElementById('contactForm');
+  contactForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('cName').value.trim();
+    const email = document.getElementById('cEmail').value.trim();
+    const msg = document.getElementById('cMsg').value.trim();
+    const subject = encodeURIComponent('Course enquiry from ' + name);
+    const body = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
+    window.location.href = `mailto:admissions@tapacademy-clone.example?subject=${subject}&body=${body}`;
+    showToast('Opening your email app…');
+  });
+
+})();
+</script>
+</body>
+</html>
